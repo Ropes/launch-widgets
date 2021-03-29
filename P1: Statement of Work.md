@@ -45,7 +45,7 @@ In the case of failure or success, logs from `make build`, should be picked up b
 
 In order to Authenticate with Azure Blob API from the Container, the process will need to be provided with a [Pod-managed Identity](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-identity#use-pod-managed-identities). Ask the Security team for a cluster available Pod Identity with Write Access to the Blob store Container, and [apply it](https://docs.microsoft.com/en-us/azure/aks/use-azure-ad-pod-identity#run-a-sample-application) to the [Kubernetes Job Spec](https://kubernetes.io/docs/concepts/workloads/controllers/job/).
 
-## `make launch-build`
+## `make launch-build` - Launch Job to K8s
 
 The command to launch all the components together and wait for completion!
 
@@ -71,7 +71,7 @@ This could be achieved with the `azcopy` [CLI tool](https://docs.microsoft.com/e
 
 # Deliverable
 
-A deterministic toolchain to deploy our source code build into a Kubernetes cluster, and collect the artifacts for the user.
+A deterministic toolchain to deploy our source code build script into a Kubernetes cluster Job, and collect the artifacts for the user.
 
 I've outlined the tasks as a set of Make targets, however it might be more efficient to break the steps down further, and apply Python scripts to execute all of the Azure integrations. 
 
@@ -83,7 +83,7 @@ I've outlined the tasks as a set of Make targets, however it might be more effic
     * This is a build system, being able to reproduce errors quickly and efficiently will save work hours and mental stress. Limit or eliminate the number of assets loaded into the container at runtime, and instead save them into the Docker Image during the build process.
     * Use the git commit hash of the build's source code to tag and label all images and artifacts.
 * **Learn**
-    * I haven't got into high depth of Kubernetes, so explore the documentation, and maybe you'll find improvements to make!
+    * I haven't got into high depth of Kubernetes components, so explore the documentation, and learn!
 
 ### Optimization Ideas
 
