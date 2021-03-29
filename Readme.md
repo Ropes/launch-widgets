@@ -9,8 +9,16 @@ Written to `P1: Statement of Work.md`.
 
 Written in Go, pull down dependencies with `make mod` can be invoked by `make run`, tests by `make test`, and source code can be found in pkg/schedule, a main.go entrypoint with example runtime code can be found in `cmd/`
 
+## Running the code
 
-## Node
+Make targets are provided to source dependencies, execute tests, and run an example program. 
+
+* `make mod` will ensure the few dependencies are available to compile.
+* `make test` runs unit tests.
+* `make run` executes the small program in `cmd/main.go`. It is configured with a few hardcoded parameters to show the Pod ComputeResource constraints interacting balancing with the Pod Priority scores on a over-utilized cluster of Nodes. Pods will periodically be scheduled and then unscheduled as their priority is lowered by running on Nodes, thus enabling previously unscheduled Pods to replace them.
+
+
+### Node
 
 Nodes encapsulate 
 
@@ -27,7 +35,7 @@ Count assigned Apps "hosted" by node
 Add/Remove App from Node
     * Consume/Release capacity
 
-## Job/App/Pod
+### Pod/App
 
 Container data object, unit of work to be assigned 
 

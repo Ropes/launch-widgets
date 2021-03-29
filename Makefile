@@ -1,5 +1,3 @@
-
-
 .PHONY: mod
 mod: 
 	go mod download
