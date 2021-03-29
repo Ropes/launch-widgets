@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// ComputeResource represents scalar fields of resources. The type
+// enables comparison, aggregation, and checking capacity between values.
 type ComputeResource struct {
 	mCPU int
 	mem  int
@@ -85,6 +87,12 @@ func (a ByPriority) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByPriority) Less(i, j int) bool { return a[i].Priority < a[j].Priority }
 
 // Node has a set of resources(Limit) which can host Pod workloads.
+//
+// API provides ability to Start and Stop Pods being hosted, as well as
+// executing an 'invoice' against the pods' Priority. Price of the
+// invoice is calculated based on the percentage of the Node's CPU
+// and memory.
+//
 // Each node can specify a PriorityCost multiplier which will apply
 // cost to a Pod when InvoicePods() is called. This priority is
 // utilized by the Scheduler to remove/replace Pods with those of

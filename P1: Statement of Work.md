@@ -27,8 +27,8 @@ Existing functionality. Executes build on the source code and models within this
 Using a [Dockerfile](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/), wrap up necessary source code, Makefile, packages and libraries to run `make build`. Creating an image capable of running `make build-wrapper`, and push image to [Github Container Registry](https://docs.github.com/en/packages/guides/about-github-container-registry).
 
 * Docker image is tagged with BUILD_TAG, eg: `docker.pkg.github.com/kerbodyne/ke-1-build:BUILD_TAG`
-* Image run entrypoint is `make build-wrapper`
-* Image is pushed to Github's Container Respository(could be done via CI job)
+* Image run entrypoint is `make build-wrapper`.
+* Image is pushed to Github's Container Repository(could be done via CI job).
 
 ## `make build-wrapper` - run `make build`; archive artifacts
 
@@ -37,7 +37,7 @@ A Makefile target which invokes `make build`, and then exports binaries to Azure
 In the case of failure or success, logs from `make build`, should be picked up by the Python script and written to [Azure blob store](https://azure.microsoft.com/en-us/services/storage/blobs/) account for access by developers, users, and CI/CD systems.
 
 * eg: `make build 2>&1 | tee /tmp/log-$(date +%F:+%T)` 
-    * **note**: `tee` will silence an error code returned from the make command, this works to our advantage inside a Kubernetes Joballowing the next step to run.
+    * **note**: `tee` will silence an error code returned from the make command, this works to our advantage inside a Kubernetes Job, allowing the next Make target to run.
 
 * Format: `http://kerbodyne.blob.core.windows.net/ke-1-builds/BUILD_TAG/` with subdirectories: 
     * `/bin/` - Binary artifacts
@@ -64,9 +64,10 @@ In this Makefile target, a user can wait for the Job's completion with:
     * `ke-1-ctl` binary
     * Logs - named with timestamp in Blob store.
 
-Final step; collect the artifacts using from the Blob store Container `/ke-1-builds/BUILD_TAG/`.
+Final step; collect the artifacts using from the Blob store Container `/ke-1-builds/BUILD_TAG/...`.
 
-This could be achieved with the `az` CLI tool, pulling the files down into the user's local machine. This could be separated into a separate Make target.
+This could be achieved with the `azcopy` [CLI tool](https://docs.microsoft.com/en-us/azure/storage/common/storage-ref-azcopy-copy), pulling the files down into the user's local machine. eg: `azcopy cp "https://[account].blob.core.windows.net/[container]/[path/to/blob]" "/path/to/file.txt"` This could be separated into a separate Make target.
+
 
 # Deliverable
 
@@ -74,17 +75,17 @@ A deterministic toolchain to deploy our source code build into a Kubernetes clus
 
 I've outlined the tasks as a set of Make targets, however it might be more efficient to break the steps down further, and apply Python scripts to execute all of the Azure integrations. 
 
-#### Priorities
+### Priorities
 
 * **Security**
-    * This project deals with our organization assets. Take every precaution to keep assets used and produced secured within our Authenticated systems, and limit Authorization of assets by least privilege necessary to complete the task.
+    * This project deals with our organization assets. Take every precaution to keep assets used and produced secured within our Authenticated systems, and limit Authorization tokens by least privilege necessary to complete the task.
 * **Determinism**
     * This is a build system, being able to reproduce errors quickly and efficiently will save work hours and mental stress. Limit or eliminate the number of assets loaded into the container at runtime, and instead save them into the Docker Image during the build process.
     * Use the git commit hash of the build's source code to tag and label all images and artifacts.
 * **Learn**
     * I haven't got into high depth of Kubernetes, so explore the documentation, and maybe you'll find improvements to make!
 
-#### Optimization Ideas
+### Optimization Ideas
 
 * {Script} pre-flight check to Blob store to assert the commit hash has not already been built.
 * Cleanup of Job container artifacts via [ttl configuration](https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs).

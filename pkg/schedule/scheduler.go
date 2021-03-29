@@ -7,7 +7,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Scheduler manages the Pods which need to be scheduled
+// Scheduler manages the Pods which need to be scheduled.
+//
+// The type should be initialized once, and then APIs used to execute
+// functionality of scheduling.
+//
+// Pods which need to be scheduled are recorded and managed internally via
+// podsToStart map. More Pods can be added via AddPodsToSchedule().
+//
+// ScheduleNodes() accepts a list of Nodes, and attempts to schedule all Pods
+// in prioritized order.
 type Scheduler struct {
 	podsToStart map[uuid.UUID]*Pod
 
